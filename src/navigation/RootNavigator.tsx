@@ -27,6 +27,8 @@ export const RootNavigator = () => {
           headerTitleStyle: {
             fontWeight: 'bold',
           },
+          headerBackTitleVisible: false,
+          headerTitle: '',
         }}
       >
         <Stack.Screen 
@@ -37,12 +39,10 @@ export const RootNavigator = () => {
         <Stack.Screen 
           name="SignUp" 
           component={SignUpScreen}
-          options={{ title: 'Sign Up' }}
         />
         <Stack.Screen 
           name="Login" 
           component={LoginScreen}
-          options={{ title: 'Sign In' }}
         />
         {/* <Stack.Screen 
           name="Home" 

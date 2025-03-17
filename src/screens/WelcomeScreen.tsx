@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, Alert, Image } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../types/navigation';
 import { styled } from 'nativewind';
@@ -10,6 +10,7 @@ import axios from 'axios';
 const StyledView = styled(View);
 const StyledText = styled(Text);
 const StyledTouchableOpacity = styled(TouchableOpacity);
+const StyledImage = styled(Image);
 
 type WelcomeScreenProps = {
   navigation: NativeStackNavigationProp<RootStackParamList, 'Welcome'>;
@@ -58,46 +59,64 @@ export default function WelcomeScreen({ navigation }: WelcomeScreenProps) {
   };
 
   return (
-    <StyledView className="flex-1 bg-secondary">
-      <StyledView className="flex-1 justify-center items-center px-6">
-        <StyledText className="text-4xl font-bold text-primary mb-2">
-          Welcome to Zivly
-        </StyledText>
-        <StyledText className="text-lg text-gray-600 text-center mb-8">
-          Where meaningful connections happen naturally
-        </StyledText>
-        
-        <AppleSignInButton
-          onSuccess={handleAppleSignInSuccess}
-          onError={(error) => {
-            console.error('Apple Sign In Error:', error);
-            Alert.alert('Error', 'Failed to sign in with Apple');
-          }}
-        />
+    <StyledView className="flex-1 bg-primary">
+      {/* Background Pattern */}
+      <StyledView className="absolute top-0 left-0 right-0 h-3/4 opacity-20">
+        <StyledView className="absolute top-[10%] right-[15%] w-24 h-24 rounded-full bg-white opacity-25" />
+        <StyledView className="absolute top-[20%] left-[10%] w-16 h-16 rounded-full bg-white opacity-20" />
+        <StyledView className="absolute top-[40%] right-[25%] w-20 h-20 rounded-full bg-white opacity-15" />
+      </StyledView>
 
-        <StyledView className="w-full flex-row items-center my-4">
-          <StyledView className="flex-1 h-[1px] bg-gray-300" />
-          <StyledText className="mx-4 text-gray-500">or</StyledText>
-          <StyledView className="flex-1 h-[1px] bg-gray-300" />
+      {/* Content */}
+      <StyledView className="flex-1 justify-between">
+        {/* Top Section */}
+        <StyledView className="pt-16 px-6">
+          <StyledText className="text-2xl font-bold text-white">
+            zivly
+          </StyledText>
         </StyledView>
 
-        <StyledTouchableOpacity
-          className="bg-primary w-full py-4 rounded-full mb-4"
-          onPress={() => navigation.navigate('SignUp')}
-        >
-          <StyledText className="text-white text-center text-lg font-semibold">
-            Get Started with Email
+        {/* Bottom Section with White Background */}
+        <StyledView className="bg-secondary rounded-t-[32px] px-6 pt-8 pb-12">
+          <StyledText className="text-3xl font-bold text-gray-800 mb-3">
+            Find Your Perfect Match
           </StyledText>
-        </StyledTouchableOpacity>
+          <StyledText className="text-gray-600 text-lg mb-8">
+            Where meaningful connections happen naturally
+          </StyledText>
 
-        <StyledTouchableOpacity
-          className="bg-white w-full py-4 rounded-full border-2 border-primary"
-          onPress={() => navigation.navigate('Login')}
-        >
-          <StyledText className="text-primary text-center text-lg font-semibold">
-            Sign in with Email
-          </StyledText>
-        </StyledTouchableOpacity>
+          <AppleSignInButton
+            onSuccess={handleAppleSignInSuccess}
+            onError={(error) => {
+              console.error('Apple Sign In Error:', error);
+              Alert.alert('Error', 'Failed to sign in with Apple');
+            }}
+          />
+
+          <StyledView className="w-full flex-row items-center my-4">
+            <StyledView className="flex-1 h-[1px] bg-gray-200" />
+            <StyledText className="mx-4 text-gray-400">or</StyledText>
+            <StyledView className="flex-1 h-[1px] bg-gray-200" />
+          </StyledView>
+
+          <StyledTouchableOpacity
+            className="bg-primary w-full py-4 rounded-full mb-4"
+            onPress={() => navigation.navigate('SignUp')}
+          >
+            <StyledText className="text-white text-center text-lg font-semibold">
+              Get Started
+            </StyledText>
+          </StyledTouchableOpacity>
+
+          <StyledTouchableOpacity
+            className="w-full"
+            onPress={() => navigation.navigate('Login')}
+          >
+            <StyledText className="text-primary text-center text-base">
+              Already have an account?
+            </StyledText>
+          </StyledTouchableOpacity>
+        </StyledView>
       </StyledView>
     </StyledView>
   );

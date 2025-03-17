@@ -53,93 +53,109 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
   };
 
   return (
-    <StyledScrollView className="flex-1 bg-secondary">
-      <StyledView className="flex-1 px-6 py-8">
-        <StyledText className="text-3xl font-bold text-primary mb-2">
-          Welcome Back
-        </StyledText>
-        <StyledText className="text-gray-600 mb-8">
-          Sign in to continue your journey
-        </StyledText>
+    <StyledView className="flex-1 bg-primary">
+      {/* Background Pattern */}
+      <StyledView className="absolute top-0 left-0 right-0 h-3/4 opacity-20">
+        <StyledView className="absolute top-[10%] right-[15%] w-24 h-24 rounded-full bg-white opacity-25" />
+        <StyledView className="absolute top-[20%] left-[10%] w-16 h-16 rounded-full bg-white opacity-20" />
+        <StyledView className="absolute top-[40%] right-[25%] w-20 h-20 rounded-full bg-white opacity-15" />
+      </StyledView>
 
-        <StyledView className="space-y-4">
-          <StyledView>
-            <StyledText className="text-gray-700 mb-1">Email</StyledText>
-            <Controller
-              control={control}
-              name="email"
-              render={({ field: { onChange, value } }) => (
-                <StyledTextInput
-                  className="bg-white p-4 rounded-lg border border-gray-300"
-                  placeholder="Enter your email"
-                  value={value}
-                  onChangeText={onChange}
-                  keyboardType="email-address"
-                  autoCapitalize="none"
-                  autoComplete="email"
-                />
-              )}
-            />
-            {errors.email && (
-              <StyledText className="text-red-500 text-sm mt-1">
-                {errors.email.message}
-              </StyledText>
-            )}
-          </StyledView>
-
-          <StyledView>
-            <StyledText className="text-gray-700 mb-1">Password</StyledText>
-            <Controller
-              control={control}
-              name="password"
-              render={({ field: { onChange, value } }) => (
-                <StyledTextInput
-                  className="bg-white p-4 rounded-lg border border-gray-300"
-                  placeholder="Enter your password"
-                  value={value}
-                  onChangeText={onChange}
-                  secureTextEntry
-                  autoComplete="password"
-                />
-              )}
-            />
-            {errors.password && (
-              <StyledText className="text-red-500 text-sm mt-1">
-                {errors.password.message}
-              </StyledText>
-            )}
-          </StyledView>
-
-          <StyledTouchableOpacity
-            className="self-end"
-            onPress={() => {
-              // TODO: Implement forgot password functionality
-              Alert.alert('Coming Soon', 'Forgot password functionality will be available soon');
-            }}
-          >
-            <StyledText className="text-primary">Forgot Password?</StyledText>
-          </StyledTouchableOpacity>
+      {/* Content */}
+      <StyledView className="flex-1 justify-between">
+        {/* Top Section */}
+        <StyledView className="pt-16 px-6">
+          <StyledText className="text-3xl font-bold text-white">
+            Welcome Back
+          </StyledText>
         </StyledView>
 
-        <StyledTouchableOpacity
-          className={`bg-primary w-full py-4 rounded-full mt-8 ${isSubmitting ? 'opacity-50' : ''}`}
-          onPress={handleSubmit(onSubmit)}
-          disabled={isSubmitting}
-        >
-          <StyledText className="text-white text-center text-lg font-semibold">
-            {isSubmitting ? 'Signing in...' : 'Sign In'}
-          </StyledText>
-        </StyledTouchableOpacity>
+        {/* Bottom Section with White Background */}
+        <StyledView className="bg-secondary flex-1 rounded-t-[32px] px-6 pt-8 pb-12 mt-8">
+          <StyledView className="space-y-6">
+            <StyledView>
+              <Controller
+                control={control}
+                name="email"
+                render={({ field: { onChange, value } }) => (
+                  <StyledTextInput
+                    className="bg-white/50 p-4 rounded-xl border-0"
+                    placeholder="Email"
+                    value={value}
+                    onChangeText={onChange}
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                    autoComplete="email"
+                  />
+                )}
+              />
+              {errors.email && (
+                <StyledText className="text-red-500 text-sm mt-1 ml-1">
+                  {errors.email.message}
+                </StyledText>
+              )}
+            </StyledView>
 
-        <StyledTouchableOpacity
-          className="mt-4"
-          onPress={() => navigation.navigate('SignUp')}
-        >
-          <StyledText className="text-primary text-center">
-            Don't have an account? Sign up
-          </StyledText>
-        </StyledTouchableOpacity>
+            <StyledView>
+              <Controller
+                control={control}
+                name="password"
+                render={({ field: { onChange, value } }) => (
+                  <StyledTextInput
+                    className="bg-white/50 p-4 rounded-xl border-0"
+                    placeholder="Password"
+                    value={value}
+                    onChangeText={onChange}
+                    secureTextEntry
+                    autoComplete="password"
+                  />
+                )}
+              />
+              {errors.password && (
+                <StyledText className="text-red-500 text-sm mt-1 ml-1">
+                  {errors.password.message}
+                </StyledText>
+              )}
+            </StyledView>
+
+            <StyledTouchableOpacity
+              className="self-end"
+              onPress={() => {
+                Alert.alert('Coming Soon', 'Forgot password functionality will be available soon');
+              }}
+            >
+              <StyledText className="text-primary font-medium">
+                Forgot password?
+              </StyledText>
+            </StyledTouchableOpacity>
+
+            <StyledTouchableOpacity
+              className={`bg-primary w-full py-4 rounded-full mt-4 ${isSubmitting ? 'opacity-50' : ''}`}
+              onPress={handleSubmit(onSubmit)}
+              disabled={isSubmitting}
+            >
+              <StyledText className="text-white text-center text-lg font-semibold">
+                {isSubmitting ? 'Signing in...' : 'Log in'}
+              </StyledText>
+            </StyledTouchableOpacity>
+
+            <StyledView className="w-full flex-row items-center my-4">
+              <StyledView className="flex-1 h-[1px] bg-gray-200" />
+              <StyledText className="mx-4 text-gray-400">or</StyledText>
+              <StyledView className="flex-1 h-[1px] bg-gray-200" />
+            </StyledView>
+
+            <StyledTouchableOpacity
+              className="w-full"
+              onPress={() => navigation.navigate('SignUp')}
+            >
+              <StyledText className="text-primary text-center">
+                Sign up
+              </StyledText>
+            </StyledTouchableOpacity>
+          </StyledView>
+        </StyledView>
       </StyledView>
-    </StyledScrollView>
+    </StyledView>
   );
 } 
