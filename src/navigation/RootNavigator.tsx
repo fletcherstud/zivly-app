@@ -6,7 +6,7 @@ import { RootStackParamList } from '../types/navigation';
 // Import screens
 import WelcomeScreen from '../screens/WelcomeScreen';
 import SignUpScreen from '../screens/SignUpScreen';
-// import LoginScreen from '../screens/LoginScreen';
+import LoginScreen from '../screens/LoginScreen';
 // import HomeScreen from '../screens/HomeScreen';
 // import ProfileScreen from '../screens/ProfileScreen';
 // import MatchesScreen from '../screens/MatchesScreen';
@@ -39,12 +39,12 @@ export const RootNavigator = () => {
           component={SignUpScreen}
           options={{ title: 'Sign Up' }}
         />
-        {/* <Stack.Screen 
+        <Stack.Screen 
           name="Login" 
           component={LoginScreen}
-          options={{ title: 'Login' }}
+          options={{ title: 'Sign In' }}
         />
-        <Stack.Screen 
+        {/* <Stack.Screen 
           name="Home" 
           component={HomeScreen}
           options={{ title: 'Zivly' }}
