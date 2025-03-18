@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, TextInput, ScrollView, Alert, Platform } from 'react-native';
+import { View, Text, TouchableOpacity, TextInput, ScrollView, Alert, Platform, SafeAreaView } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../types/navigation';
 import { styled } from 'nativewind';
@@ -7,12 +7,14 @@ import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/dat
 import { useForm, Controller } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { authApi } from '../api/auth';
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
 const StyledTouchableOpacity = styled(TouchableOpacity);
 const StyledTextInput = styled(TextInput);
 const StyledScrollView = styled(ScrollView);
+const StyledSafeAreaView = styled(SafeAreaView);
 
 type SignUpScreenProps = {
   navigation: NativeStackNavigationProp<RootStackParamList, 'SignUp'>;
@@ -59,10 +61,37 @@ export default function SignUpScreen({ navigation }: SignUpScreenProps) {
   const onSubmit = async (data: SignUpFormData) => {
     try {
       setIsSubmitting(true);
-      console.log('Form submitted:', data);
-      navigation.navigate('Home');
+      
+      // Format the data according to the API requirements
+      const signUpData = {
+        email: data.email,
+        birthDate: data.birthday.toISOString().split('T')[0], // Format: YYYY-MM-DD
+        firstName: data.firstName,
+        lastName: data.lastName,
+        password: data.password,
+      };
+      console.log(signUpData);
+      await authApi.signUp(signUpData);
+      
+      // Show success message
+      Alert.alert(
+        'Success',
+        'Your account has been created successfully!',
+        [
+          {
+            text: 'OK',
+            onPress: () => navigation.navigate('Home'),
+          },
+        ]
+      );
     } catch (error) {
-      Alert.alert('Error', 'Failed to create account');
+      let errorMessage = 'Failed to create account';
+      
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+      
+      Alert.alert('Error', errorMessage);
     } finally {
       setIsSubmitting(false);
     }

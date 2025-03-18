@@ -6,6 +6,7 @@ import { styled } from 'nativewind';
 import { useForm, Controller } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { authApi } from '../api/auth';
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
@@ -42,11 +43,33 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
   const onSubmit = async (data: LoginFormData) => {
     try {
       setIsSubmitting(true);
-      // TODO: Implement your login API call here
-      console.log('Form submitted:', data);
+      
+      // Call login API
+      await authApi.login({
+        email: data.email,
+        password: data.password,
+      });
+
+      // Navigate to Home screen on success
       navigation.navigate('Home');
     } catch (error) {
-      Alert.alert('Error', 'Failed to sign in');
+      let errorMessage = 'Failed to sign in';
+      
+      if (error instanceof Error) {
+        // Use the error message from the API if available
+        errorMessage = error.message;
+      }
+      
+      Alert.alert(
+        'Error',
+        errorMessage,
+        [
+          {
+            text: 'Try Again',
+            style: 'cancel',
+          },
+        ]
+      );
     } finally {
       setIsSubmitting(false);
     }
