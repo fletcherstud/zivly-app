@@ -1,6 +1,11 @@
 import React from 'react';
-import { RootNavigator } from './src/navigation/RootNavigator';
+import { UserProvider } from './src/context/UserContext';
+import RootNavigator from './src/navigation/RootNavigator';
 
 export default function App() {
-  return <RootNavigator />;
+  return (
+    <UserProvider>
+      <RootNavigator />
+    </UserProvider>
+  );
 } 

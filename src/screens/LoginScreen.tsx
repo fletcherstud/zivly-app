@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, TextInput, ScrollView, Alert } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../types/navigation';
+import { AuthStackParamList, RootStackParamList } from '../types/navigation';
 import { styled } from 'nativewind';
 import { useForm, Controller } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { authApi } from '../api/auth';
+import { useUser } from '../context/UserContext';
+import { CompositeNavigationProp } from '@react-navigation/native';
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
@@ -14,8 +16,13 @@ const StyledTouchableOpacity = styled(TouchableOpacity);
 const StyledTextInput = styled(TextInput);
 const StyledScrollView = styled(ScrollView);
 
+type LoginScreenNavigationProp = CompositeNavigationProp<
+  NativeStackNavigationProp<AuthStackParamList, 'Login'>,
+  NativeStackNavigationProp<RootStackParamList>
+>;
+
 type LoginScreenProps = {
-  navigation: NativeStackNavigationProp<RootStackParamList, 'Login'>;
+  navigation: LoginScreenNavigationProp;
 };
 
 const loginSchema = z.object({
@@ -27,6 +34,7 @@ type LoginFormData = z.infer<typeof loginSchema>;
 
 export default function LoginScreen({ navigation }: LoginScreenProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { signIn } = useUser();
 
   const {
     control,
@@ -45,18 +53,19 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
       setIsSubmitting(true);
       
       // Call login API
-      await authApi.login({
+      const response = await authApi.login({
         email: data.email,
         password: data.password,
       });
+      console.log(response);
+      // Update user context
+      await signIn(response);
 
-      // Navigate to Home screen on success
-      navigation.navigate('Home');
+      // The navigation will happen automatically due to the user context change
     } catch (error) {
       let errorMessage = 'Failed to sign in';
       
       if (error instanceof Error) {
-        // Use the error message from the API if available
         errorMessage = error.message;
       }
       

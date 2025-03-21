@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, TextInput, ScrollView, Alert, Platform, SafeAreaView } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../types/navigation';
+import { AuthStackParamList, RootStackParamList } from '../types/navigation';
 import { styled } from 'nativewind';
 import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import { useForm, Controller } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { authApi } from '../api/auth';
+import { useUser } from '../context/UserContext';
+import { CompositeNavigationProp } from '@react-navigation/native';
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
@@ -16,8 +18,13 @@ const StyledTextInput = styled(TextInput);
 const StyledScrollView = styled(ScrollView);
 const StyledSafeAreaView = styled(SafeAreaView);
 
+type SignUpScreenNavigationProp = CompositeNavigationProp<
+  NativeStackNavigationProp<AuthStackParamList, 'SignUp'>,
+  NativeStackNavigationProp<RootStackParamList>
+>;
+
 type SignUpScreenProps = {
-  navigation: NativeStackNavigationProp<RootStackParamList, 'SignUp'>;
+  navigation: SignUpScreenNavigationProp;
 };
 
 const signUpSchema = z.object({
@@ -41,6 +48,7 @@ type SignUpFormData = z.infer<typeof signUpSchema>;
 export default function SignUpScreen({ navigation }: SignUpScreenProps) {
   const [showDatePicker, setShowDatePicker] = useState(Platform.OS === 'ios');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { signIn } = useUser();
 
   const {
     control,
@@ -62,28 +70,21 @@ export default function SignUpScreen({ navigation }: SignUpScreenProps) {
     try {
       setIsSubmitting(true);
       
-      // Format the data according to the API requirements
       const signUpData = {
         email: data.email,
-        birthDate: data.birthday.toISOString().split('T')[0], // Format: YYYY-MM-DD
+        password: data.password,
         firstName: data.firstName,
         lastName: data.lastName,
-        password: data.password,
+        birthDate: data.birthday.toISOString(),
       };
-      console.log(signUpData);
-      await authApi.signUp(signUpData);
-      
-      // Show success message
-      Alert.alert(
-        'Success',
-        'Your account has been created successfully!',
-        [
-          {
-            text: 'OK',
-            onPress: () => navigation.navigate('Home'),
-          },
-        ]
-      );
+
+      // Call signup API
+      const response = await authApi.signUp(signUpData);
+
+      // Update user context
+      await signIn(response);
+
+      // The navigation will happen automatically due to the user context change
     } catch (error) {
       let errorMessage = 'Failed to create account';
       
@@ -91,7 +92,16 @@ export default function SignUpScreen({ navigation }: SignUpScreenProps) {
         errorMessage = error.message;
       }
       
-      Alert.alert('Error', errorMessage);
+      Alert.alert(
+        'Error',
+        errorMessage,
+        [
+          {
+            text: 'Try Again',
+            style: 'cancel',
+          },
+        ]
+      );
     } finally {
       setIsSubmitting(false);
     }

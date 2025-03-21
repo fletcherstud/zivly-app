@@ -1,11 +1,12 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, Alert, Image } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../types/navigation';
+import { AuthStackParamList } from '../types/navigation';
 import { styled } from 'nativewind';
 import { AppleSignInButton } from '../components/AppleSignInButton';
 import * as AppleAuthentication from 'expo-apple-authentication';
 import axios from 'axios';
+import { useUser } from '../context/UserContext';
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
@@ -13,10 +14,12 @@ const StyledTouchableOpacity = styled(TouchableOpacity);
 const StyledImage = styled(Image);
 
 type WelcomeScreenProps = {
-  navigation: NativeStackNavigationProp<RootStackParamList, 'Welcome'>;
+  navigation: NativeStackNavigationProp<AuthStackParamList, 'Welcome'>;
 };
 
 export default function WelcomeScreen({ navigation }: WelcomeScreenProps) {
+  const { signIn } = useUser();
+
   const handleAppleSignInSuccess = async (credential: AppleAuthentication.AppleAuthenticationCredential) => {
     try {
       const { authorizationCode, identityToken, fullName, email } = credential;
@@ -32,9 +35,12 @@ export default function WelcomeScreen({ navigation }: WelcomeScreenProps) {
         state: 'xyz123', // Match your backend's expected state
       };
 
-      if (fullName || email) {
+      // Only include user if fullName has non-null fields or email is present
+      const hasValidName = fullName && (fullName.givenName || fullName.familyName);
+      if (hasValidName || email) {
         data.user = JSON.stringify({
-          name: fullName ? `${fullName.givenName} ${fullName.familyName}` : undefined,
+          firstName: fullName?.givenName || undefined,
+          lastName: fullName?.familyName || undefined,
           email: email || undefined,
         });
       }
@@ -49,9 +55,8 @@ export default function WelcomeScreen({ navigation }: WelcomeScreenProps) {
           },
         }
       );
-
-      console.log('Backend response:', response.data);
-      navigation.navigate('Home');
+      // Update user context instead of navigating
+      await signIn(response.data);
     } catch (error) {
       console.error('Authentication error:', error);
       Alert.alert('Error', 'Failed to sign in with Apple');
